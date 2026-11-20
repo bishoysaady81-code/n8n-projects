@@ -1,0 +1,745 @@
+{
+  "name": "ob-application-coach.json",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Job Application",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Description",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "CV",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "company_email",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -576,
+        0
+      ],
+      "id": "f5d1a692-1fcb-4c48-ad16-6b158f2dcd1a",
+      "name": "On form submission",
+      "webhookId": "f37cccee-1d2b-4b25-878b-21704c305148"
+    },
+    {
+      "parameters": {
+        "resource": "document",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "text": "   Extract the full text of this CV and summarize: skills, experience, education, projects, certifications. Return clean structured text.",
+        "inputType": "binary",
+        "binaryPropertyName": "CV",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        0
+      ],
+      "id": "67ea85f5-5528-46e6-97e6-6274ef6d2c1f",
+      "name": "Analyze document",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "B4I7k1FWh5Ws81Eu",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "  Compares the candidate CV with the job description. Returns a match score out of 100, strengths, gaps, and suggested CV improvements.",
+        "text": "={{ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "  You are a CV Matcher. Compare the CV with the job description. Return: match score (0-100), matching skills, missing skills, and 5 concrete CV improvements."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        80,
+        192
+      ],
+      "id": "64e64709-0887-4fda-a272-ef9627c9353d",
+      "name": "CV_Matcher"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        96,
+        400
+      ],
+      "id": "2a640273-892c-4037-b9fc-0d6759cd4b7e",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "j3IwCVhPTenDJXQu",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        352,
+        432
+      ],
+      "id": "e9de4032-0091-4a0d-9ac0-d6a1286947f3",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "j3IwCVhPTenDJXQu",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        672,
+        400
+      ],
+      "id": "c0a60cc6-c4fc-43a9-ba40-2afdb7f91b21",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "j3IwCVhPTenDJXQu",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        224
+      ],
+      "id": "9789e852-324b-4882-aec4-7e3f166e5954",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "B4I7k1FWh5Ws81Eu",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "  Writes a tailored, professional cover letter based on the candidate CV and job description.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "  You are a Cover Letter Writer. Write a concise, persuasive, tailored cover letter (max 250 words) using the candidate's real experience. Do not invent facts."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "6abb6318-80b3-439c-9189-f108015afbe3",
+      "name": "Cover_Letter_Writer"
+    },
+    {
+      "parameters": {
+        "jsCode": "const run = $input.first().json;\nconst steps = run.intermediateSteps || [];\n \nconst clean = value => {\n  const text = typeof value === 'string' ? value : JSON.stringify(value);\n  try {\n    const parsed = JSON.parse(text);\n    const first = Array.isArray(parsed) ? parsed[0] : parsed;\n    return first.output ?? first.response ?? first.text ?? text;\n  } catch {\n    return text;\n  }\n};\n \nconst resultOf = word => {\n  const step = steps.filter(s => String(s.action?.tool || '').toLowerCase().includes(word)).pop();\n  return step ? clean(step.observation) : null;\n};\n \nconst sections = [\n  ['Match Analysis', resultOf('matcher'), 'CV Matcher'],\n  ['Tailored Cover Letter', resultOf('letter'), 'Cover Letter Writer'],\n  ['Interview Preparation', resultOf('interview'), 'Interview Coach'],\n];\n \nconst report = [run.output]\n  .concat(sections.map(([title, body, agent]) => '## ' + title + '\\n\\n' + (body || '_The ' + agent + ' did not run this time. Please submit the form again._')))\n  .join('\\n\\n');\n \nreturn [{ json: { report, specialistsUsed: sections.filter(s => s[1]).length } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        0
+      ],
+      "id": "346b0495-296a-4534-a928-629898c9daff",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.report }}",
+        "destinationKey": "html",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        592,
+        0
+      ],
+      "id": "04339bcc-0b7a-40ff-8d89-2fa6ce945648",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "=Your job application coaching {{ $('On form submission').item.json['Job Title'] }}",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "67bf9f33-fd7d-484c-bdb2-1963a492a10f",
+      "name": "Send a message",
+      "webhookId": "22865eb6-15d4-443d-bc08-e29b8fee2ba2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "P2nCVRJe08beRNYb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=   Candidate name: {{ $json.name }}\n   Job title: {{ $json.job_title }}\n\n   Job description:\n   {{ $json.job_description }}\n\n   Candidate CV:\n   {{ $json.cv_text }}",
+        "options": {
+          "systemMessage": "You are a senior career coach who manages a team of three specialist agents, available to you as tools:\n- CV_Matcher: scores how well the CV fits the job and lists strengths and gaps.\n- Cover_Letter Writer: writes a tailored cover letter.\n- Interview Coach: prepares likely interview questions with model answers.\n \nHow to work:\n1. Call CV_Matcher first.\n2. Then call Cover_Letter_Writer, and include the CV_Matcher's strengths and gaps in your task message.\n3. Then call Interview_Coach, and include the CV_Matcher's gaps in your task message.\n4. Each specialist automatically receives the job description and the CV.\n5. You MUST call all three specialists, each exactly once, before your final answer.\n \nYour final answer is only the opening of the report (the specialists' full work is added automatically after it). Write in Markdown:\n- One greeting line using the candidate's first name.\n- A 2-sentence honest summary of the match, including the score from CV_Matcher.\n- ### Your Next 3 Steps: three short, practical action items.\nKeep it under 120 words and encouraging."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "035b1bed-a3c6-4476-b472-68e96848479b",
+      "name": "Career Coach (Orchestrator)"
+    },
+    {
+      "parameters": {
+        "toolDescription": "  Prepares the candidate for the interview: likely questions, sample answers, and tips based on the CV and job description.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "  You are an Interview Coach. Provide 8 likely interview questions (technical + behavioral) for this job, a short sample answer for each based on the candidate's CV, and 3 general tips."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        672,
+        224
+      ],
+      "id": "3a6cc155-952c-4dc9-a997-2a274d1bf644",
+      "name": "Interview_Coach"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        240
+      ],
+      "id": "59fe19f1-92c9-4ef0-bc94-2d52b695e463",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "j3IwCVhPTenDJXQu",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3100ce47-6fc3-47f9-a2b2-c6501ab9222a",
+              "name": "name",
+              "value": "={{ $('On form submission').item.json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "0cfdf550-baef-45ac-89b0-0a0fc4d1a8f2",
+              "name": "email",
+              "value": "={{ $('On form submission').item.json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "abe74ac0-2bcd-4247-a631-90bb94d61a9d",
+              "name": "job_title",
+              "value": "={{ $('On form submission').item.json['Job Title'] }}",
+              "type": "string"
+            },
+            {
+              "id": "020f77f0-acf7-45fb-beec-d448c660ee4a",
+              "name": "job_description",
+              "value": "={{ $('On form submission').item.json['Job Description'] }}",
+              "type": "string"
+            },
+            {
+              "id": "1e4523b5-0796-4a3a-b72f-d929106e8be4",
+              "name": "cv_text",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -192,
+        0
+      ],
+      "id": "37eca6a4-1925-431f-9a0b-ec3d96d72569",
+      "name": "Prepare Application"
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.output }}",
+        "destinationKey": "html",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        0
+      ],
+      "id": "b1c2d2f7-cd96-40f0-a532-672932d05d99",
+      "name": "Proposal to HTML"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "=Approval proposal for  {{ $('On form submission').item.json[\"Job Title\"] }}",
+        "message": "={{ $json.html }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1632,
+        0
+      ],
+      "id": "237646c7-f512-4e17-aa24-550b64d91cef",
+      "name": "Send message and wait for response",
+      "webhookId": "bc41df12-8698-4bad-8a01-70155bba3e0b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "P2nCVRJe08beRNYb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f76a83e0-8684-47e9-92f9-c79825701360",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1824,
+        0
+      ],
+      "id": "f7e28d99-aaf6-45e0-834b-503b5d212d2b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "   const form = $('On form submission').first();\n   const prep = $('Prepare Application').first().json;\n   const proposal = $('Proposal to HTML').first().json;\n\n   const key = Object.keys(form.binary)[0];\n\n   return [{\n     json: {\n       company_email: prep.company_email,\n       job_title: prep.job_title,\n       name: prep.name,\n       html: proposal.html\n     },\n     binary: { CV: form.binary[key] }\n   }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2048,
+        -96
+      ],
+      "id": "24fc98dd-08ad-4515-87d0-70371d3440f8",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=   Candidate: {{ $('Prepare Application').first().json.name }}\n   Candidate email: {{ $('Prepare Application').first().json.email }}\n   Job title: {{ $('Prepare Application').first().json.job_title }}\n\n   Job description:\n   {{ $('Prepare Application').first().json.job_description }}\n\n   Candidate CV:\n   {{ $('Prepare Application').first().json.cv_text }}",
+        "options": {
+          "systemMessage": "   You are a professional proposal writer. Write a formal job application proposal addressed to the hiring team of the company, from the candidate. Use Markdown with these sections: 1) Introduction 2) Why I am a fit for this role 3) Relevant experience and projects (from the CV only, do not invent facts) 4) How I will add value in the first 90 days 5) Next steps and contact details. Keep it under 400 words, professional and confident."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "5d1b2966-6b8d-4916-9454-4040c14919d8",
+      "name": "Proposal Writer"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.company_email }}",
+        "subject": "=Application for  {{ $('On form submission').item.json[\"Job Title\"] }}",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "CV"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2272,
+        -96
+      ],
+      "id": "96eac6ba-2dbd-4407-8873-957ae29822f6",
+      "name": "Send a message1",
+      "webhookId": "7f2b2a32-87b5-4478-b8ce-4e7f052d3efc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "P2nCVRJe08beRNYb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        96
+      ],
+      "id": "134c33ae-44d6-44ba-a632-7caa34b90b15",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Analyze document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze document": {
+      "main": [
+        [
+          {
+            "node": "Prepare Application",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CV_Matcher": {
+      "ai_tool": [
+        [
+          {
+            "node": "Career Coach (Orchestrator)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CV_Matcher",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Cover_Letter_Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Interview_Coach",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Career Coach (Orchestrator)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cover_Letter_Writer": {
+      "ai_tool": [
+        [
+          {
+            "node": "Career Coach (Orchestrator)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Career Coach (Orchestrator)": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interview_Coach": {
+      "ai_tool": [
+        [
+          {
+            "node": "Career Coach (Orchestrator)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Proposal Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Proposal Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Application": {
+      "main": [
+        [
+          {
+            "node": "Career Coach (Orchestrator)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proposal to HTML": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proposal Writer": {
+      "main": [
+        [
+          {
+            "node": "Proposal to HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b32b84b4-5501-4425-8be7-ac1ac69ebc43",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "46163159c367e799cfc1f4571b744b451297a47dfba284156d110394c9aaec6b"
+  },
+  "nodeGroups": [],
+  "id": "o0r9UOTEQygYAY84",
+  "tags": []
+}

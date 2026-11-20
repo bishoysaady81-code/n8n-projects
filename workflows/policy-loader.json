@@ -1,0 +1,249 @@
+{
+  "name": "policy-loader.json",
+  "nodes": [
+    {
+      "parameters": {
+        "events": [
+          "init"
+        ]
+      },
+      "type": "n8n-nodes-base.n8nTrigger",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -144
+      ],
+      "id": "2fda2a33-c5e2-4959-b07e-6b9a1e31a632",
+      "name": "n8n Trigger"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -128,
+        -16
+      ],
+      "id": "51ef39a8-fedb-4528-ab7d-db2fa6cdefc6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        128
+      ],
+      "id": "79a84431-dafe-4278-8731-396d7852368f",
+      "name": "Manual Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1ol-Y83L7XYmR6cc9DG64dsmBk7HkQGZw",
+            "mode": "id"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        128,
+        -32
+      ],
+      "id": "ef5d1572-4dd3-4fd8-976f-6c7ce5d9cfb8",
+      "name": "List Policy Files",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "34YhNU2DG8BptxEE",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {}
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        304,
+        -32
+      ],
+      "id": "07430d5a-2cf0-4412-afa0-7324f9bfbf02",
+      "name": "Download Policy",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "34YhNU2DG8BptxEE",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "value": "HR_RULES",
+          "mode": "list"
+        },
+        "clearStore": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.4,
+      "position": [
+        544,
+        -48
+      ],
+      "id": "7863a12f-5dbe-479c-8970-951904100429",
+      "name": "Simple Vector Store"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        144
+      ],
+      "id": "c4f6c800-3b98-4697-8526-3e170322cf49",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "B4I7k1FWh5Ws81Eu",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        160
+      ],
+      "id": "3bc2c1f0-5e01-48b3-ac90-5136cd4bc382",
+      "name": "Default Data Loader"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "n8n Trigger": {
+      "main": [
+        [
+          {
+            "node": "List Policy Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "List Policy Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "List Policy Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Policy Files": {
+      "main": [
+        [
+          {
+            "node": "Download Policy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Policy": {
+      "main": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e093185d-b353-45e8-abf4-6fea2c9aee5c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "46163159c367e799cfc1f4571b744b451297a47dfba284156d110394c9aaec6b"
+  },
+  "nodeGroups": [],
+  "id": "zHwdoVuYLoQpQX5o",
+  "tags": []
+}

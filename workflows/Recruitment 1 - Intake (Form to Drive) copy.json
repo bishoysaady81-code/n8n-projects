@@ -1,0 +1,599 @@
+{
+  "name": "Recruitment 1 - Intake (Form to Drive) copy",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Ndr-Edw2hyr_ZAiLIBdlDjRkLYkklBpoSsD5sggD3go",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ndr-Edw2hyr_ZAiLIBdlDjRkLYkklBpoSsD5sggD3go/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "aa817ba9-a7ae-4f99-9762-7bf8fdb3e2f7",
+      "name": "Find Previous Applications",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        656,
+        368
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8mRzbuNq6D8gyhDp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.duplicate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b3d2415d-1693-4a2b-a2f1-714f597ae01c",
+      "name": "Already Applied?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1088,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "CV",
+        "name": "={{ $('Check Duplicate').item.json.name }} - {{ $('Check Duplicate').item.json.position }}.pdf",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive",
+          "cachedResultName": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1iFsfd1MQXlMREm9PGEH3JcjB13R7ddD-",
+          "mode": "list",
+          "cachedResultName": "CVs from uplouded",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1iFsfd1MQXlMREm9PGEH3JcjB13R7ddD-"
+        },
+        "options": {}
+      },
+      "id": "0417d38b-a7fb-4cc5-81b9-848f11780bc5",
+      "name": "Upload CV to Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1328,
+        496
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "34YhNU2DG8BptxEE",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Ndr-Edw2hyr_ZAiLIBdlDjRkLYkklBpoSsD5sggD3go",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Ndr-Edw2hyr_ZAiLIBdlDjRkLYkklBpoSsD5sggD3go/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Check Duplicate').item.json.name }}",
+            "Position": "={{ $('Check Duplicate').item.json.position }}",
+            "Applied At": "={{ $now.toISO() }}",
+            "Email": "={{ $('Check Duplicate').item.json.email }}",
+            "Motivation": "={{ $('Check Duplicate').item.json.motivation }}",
+            "CV File ID": "={{ $json.id }}",
+            "CV Link": "={{ 'https://drive.google.com/file/d/' + $json.id + '/view' }}",
+            "Status": "New"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Applied At",
+              "displayName": "Applied At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Position",
+              "displayName": "Position",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Motivation",
+              "displayName": "Motivation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CV File ID",
+              "displayName": "CV File ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CV Link",
+              "displayName": "CV Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recommendation",
+              "displayName": "Recommendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Years Experience",
+              "displayName": "Years Experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Top Skills",
+              "displayName": "Top Skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Matched",
+              "displayName": "Matched",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Missing",
+              "displayName": "Missing",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Read Method",
+              "displayName": "Read Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Problems",
+              "displayName": "Problems",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Evaluated At",
+              "displayName": "Evaluated At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6f1a9ba8-8e5d-48d5-991b-c39bb2cd75bd",
+      "name": "Log Application",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1552,
+        496
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8mRzbuNq6D8gyhDp",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Thank you!",
+        "completionMessage": "Your application has been received. We will contact you soon.",
+        "options": {}
+      },
+      "id": "eab79a6b-d2ee-4516-bde6-9aa7a221ed59",
+      "name": "Show Thank You",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1776,
+        496
+      ],
+      "webhookId": "121cb788-339f-4b92-bb92-d5df0c028244"
+    },
+    {
+      "parameters": {
+        "formTitle": "Apply for a Job",
+        "formDescription": "Please fill in the form and attach your CV (PDF only).",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Position",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "AI Automation Engineer (Junior)"
+                  },
+                  {
+                    "option": "Data Analyst"
+                  },
+                  {
+                    "option": "Customer Support Specialist"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Why do you want this job?",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldLabel": "CV",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5274dc03-6410-40c4-aeec-52c216c7c1fd",
+      "name": "Apply for a Job1",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        496
+      ],
+      "webhookId": "f0330481-640f-4103-986d-e9c24fcfc601"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "37e8d5c5-f457-47ed-915b-55dbf1cd1da5",
+      "name": "Submission Valid?2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "There was a problem with your submission",
+        "completionMessage": "={{ $json.errorText }}",
+        "options": {}
+      },
+      "id": "a181b2e0-5cde-4b1a-acd6-848606f058b2",
+      "name": "Show Validation Errors1",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        656,
+        624
+      ],
+      "webhookId": "e26575c0-4d1f-4294-939b-4d990f5a4d9c"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Already applied",
+        "completionMessage": "You have already applied for this position.",
+        "options": {}
+      },
+      "id": "dd97dd8a-2946-402d-8067-6bdc343ee163",
+      "name": "Show Already Applied",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1328,
+        240
+      ],
+      "webhookId": "140bdcfe-f60a-427d-a7ff-70a98b19ce8c"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst f = item.json;\nconst errors = [];\n\nconst name = String(f['Full Name'] || '').trim().replace(/\\s+/g, ' ');\nconst email = String(f.Email || '').trim().toLowerCase();\nconst position = f.Position;\nconst motivation = String(f['Why do you want this job?'] || '').trim();\nconst allowed = ['AI Automation Engineer (Junior)', 'Data Analyst', 'Customer Support Specialist'];\n\nif (name.length < 3 || name.split(' ').length < 2 || !/^[\\p{L} .'-]+$/u.test(name))\n  errors.push('Please enter your full name (first and last name, letters only).');\nif (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email))\n  errors.push('Please enter a valid email address.');\nif (!allowed.includes(position))\n  errors.push('Please choose one of the listed positions.');\nif (motivation.length > 1500)\n  errors.push('Please keep your motivation under 1500 characters.');\n\nif (!item.binary || !item.binary.CV) {\n  errors.push('Please attach your CV.');\n} else {\n  const buf = await this.helpers.getBinaryDataBuffer(0, 'CV');\n  if (buf.subarray(0, 5).toString() !== '%PDF-') errors.push('Your CV must be a real PDF file (renaming a Word file to .pdf does not work).');\n  if (buf.length > 5 * 1024 * 1024) errors.push('Your CV must be smaller than 5 MB.');\n  if (buf.length < 500) errors.push('Your CV file looks empty or damaged. Please export it again.');\n}\n\nreturn [{\n  json: { name, email, position, motivation, valid: errors.length === 0, errors, errorText: errors.map(e => '- ' + e).join('\\n') },\n  binary: item.binary,\n}];"
+      },
+      "id": "e8920ed6-69ce-43ba-abb8-e77ac19f8fa8",
+      "name": "Validate Submission",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const sub = $('Validate Submission').first();\nconst duplicate = $input.all().some(r =>\n  String(r.json.Email || '').toLowerCase() === sub.json.email && r.json.Position === sub.json.position);\nreturn [{ json: { ...sub.json, duplicate }, binary: sub.binary }];"
+      },
+      "id": "3aec35c3-0e0b-4aa8-a5e3-ad1746faebbc",
+      "name": "Check Duplicate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        368
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Find Previous Applications": {
+      "main": [
+        [
+          {
+            "node": "Check Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Applied?": {
+      "main": [
+        [
+          {
+            "node": "Show Already Applied",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload CV to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload CV to Drive": {
+      "main": [
+        [
+          {
+            "node": "Log Application",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Application": {
+      "main": [
+        [
+          {
+            "node": "Show Thank You",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply for a Job1": {
+      "main": [
+        [
+          {
+            "node": "Validate Submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submission Valid?2": {
+      "main": [
+        [
+          {
+            "node": "Find Previous Applications",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Validation Errors1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Submission": {
+      "main": [
+        [
+          {
+            "node": "Submission Valid?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Already Applied?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "qcxw6PUzx2HG8aXj",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "8a849869-bc90-4c0c-954e-41b964b9b9a0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "46163159c367e799cfc1f4571b744b451297a47dfba284156d110394c9aaec6b"
+  },
+  "nodeGroups": [],
+  "id": "quJp6kHIJR1mJf7y",
+  "tags": []
+}
