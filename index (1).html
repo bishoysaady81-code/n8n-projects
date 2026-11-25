@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PeopleFlow by Bishoy – HR automation built with n8n</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b16;--bg2:#0d1428;--ink:#eef2ff;--mute:#9aa6c7;--line:rgba(255,255,255,.1);--card:rgba(255,255,255,.05);--a:#7c5cff;--b:#22d3ee;--grad:linear-gradient(110deg,#7c5cff,#22d3ee);--ok:#34d399;--bad:#f87171;--btn-ink:#fff}
+@media (prefers-color-scheme:light){:root{--bg:#f6f7fd;--bg2:#ffffff;--ink:#0f1530;--mute:#586089;--line:rgba(15,21,48,.12);--card:rgba(255,255,255,.8);--a:#5b3df5;--b:#0891b2;--grad:linear-gradient(110deg,#5b3df5,#0891b2)}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font:17px/1.65 "DM Sans",system-ui,sans-serif;background:var(--bg);
+background-image:radial-gradient(900px 500px at 85% -5%,color-mix(in srgb,var(--a) 28%,transparent),transparent),radial-gradient(700px 420px at -5% 15%,color-mix(in srgb,var(--b) 20%,transparent),transparent);background-repeat:no-repeat}
+h1,h2,h3,.brand{font-family:Sora,"DM Sans",system-ui,sans-serif}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:0;z-index:5;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 70%,transparent);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;text-decoration:none}
+.brand small{font-family:"DM Sans",sans-serif;font-weight:400;color:var(--mute);font-size:.8rem}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--grad);display:grid;place-items:center}
+.links{display:flex;gap:20px;font-size:.95rem;color:var(--mute)}
+.links a{text-decoration:none}.links a:hover{color:var(--ink)}
+@media(max-width:700px){.links{display:none}}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:.85rem;white-space:nowrap}
+.badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--mute)}
+.badge.on::before{background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 25%,transparent)}
+.badge.off::before{background:var(--bad)}
+.hero{padding:88px 0 40px}
+.eyebrow{display:inline-block;padding:5px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--mute);font-size:.85rem}
+h1{font-size:clamp(2.5rem,7.5vw,5rem);line-height:1.02;letter-spacing:-.03em;font-weight:800;margin:.35em 0 .3em;max-width:14ch}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:1.2rem;color:var(--mute);max-width:56ch}
+.btn{display:inline-block;padding:13px 22px;border-radius:12px;font:700 1rem "DM Sans",sans-serif;text-decoration:none;border:1px solid var(--line);color:var(--ink);background:var(--card);cursor:pointer}
+.btn.primary{background:var(--grad);color:var(--btn-ink);border-color:transparent}
+.btn:hover{transform:translateY(-1px)}.btn:focus-visible{outline:2px solid var(--b);outline-offset:3px}
+.btn.disabled{pointer-events:none;opacity:.4}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+section{padding:56px 0 8px}
+h2{font-size:clamp(1.7rem,4vw,2.4rem);letter-spacing:-.02em;margin:0 0 .4em}
+.sub{color:var(--mute);max-width:58ch;margin:0 0 28px}
+.bento{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)}
+@media(max-width:800px){.bento{grid-template-columns:1fr}}
+.tile{display:block;padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--card);text-decoration:none;transition:.2s}
+.tile:hover,.tile:focus-visible{border-color:var(--a);transform:translateY(-3px);outline:none}
+.tile .ic{width:44px;height:44px;border-radius:12px;background:var(--grad);display:grid;place-items:center;margin-bottom:16px;font-size:1.3rem}
+.tile h3{margin:0 0 6px;font-size:1.2rem}.tile p{margin:0;color:var(--mute);font-size:.97rem}
+.chat{border:1px solid var(--line);border-radius:22px;background:var(--bg2);overflow:hidden}
+.chat-head{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:500;display:flex;gap:10px;align-items:center}
+.chat-head i{width:10px;height:10px;border-radius:50%;background:var(--grad)}
+#msgs{height:300px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px}
+#msgs div{max-width:82%;padding:10px 14px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px;align-self:flex-start}
+.me{background:var(--grad);color:var(--btn-ink);border-bottom-right-radius:4px;align-self:flex-end}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 12px}
+.chip{font:.88rem "DM Sans",sans-serif;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--mute);cursor:pointer}
+.chip:hover{color:var(--ink);border-color:var(--a)}
+#ask{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line)}
+#q{flex:1;min-width:0;font:inherit;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+#q:focus{outline:2px solid var(--a);outline-offset:1px}
+.panel{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:28px;border:1px solid var(--line);border-radius:22px;background:var(--card)}
+.panel p{margin:0;color:var(--mute)}
+.panel .row{margin:0}
+@media(max-width:800px){.panel{grid-template-columns:1fr}}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:20px 20px 20px 72px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.steps li::before{content:counter(s);position:absolute;left:20px;top:18px;width:36px;height:36px;border-radius:11px;background:var(--grad);color:var(--btn-ink);display:grid;place-items:center;font:700 1rem Sora,sans-serif}
+.steps b{display:block;font-family:Sora,sans-serif;margin-bottom:2px}.steps span{color:var(--mute)}
+.files{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.files a{display:flex;justify-content:space-between;gap:10px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-decoration:none}
+.files a:hover{border-color:var(--b)}.files em{font-style:normal;color:var(--b);font-size:.85rem}
+footer{margin-top:72px;padding:28px 0 48px;border-top:1px solid var(--line);color:var(--mute);font-size:.92rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="logo" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 12h4c2 0 2-6 5-6M11.5 12c3 0 3 6 5 6"/></svg></span>PeopleFlow <small>by Bishoy</small></a>
+  <div class="links"><a href="#ask-hr">Ask HR</a><a href="#actions">Apply</a><a href="#how">How it works</a><a href="#download">Workflows</a></div>
+  <span class="badge" id="status" role="status">Checking…</span>
+</div></nav>
+
+<main class="wrap" id="top">
+<header class="hero">
+  <span class="eyebrow">HR automation · built with n8n</span>
+  <h1>Hiring and HR support, <span class="grad">on autopilot.</span></h1>
+  <p class="lead">PeopleFlow screens job applications with AI, answers employee policy questions from company documents, and coaches candidates on their CVs. Every action below runs through real workflows.</p>
+  <div class="row"><a class="btn primary" href="#ask-hr">Ask the HR assistant</a><a class="btn" href="#actions">Apply or get coached</a></div>
+</header>
+
+<section>
+  <h2>Choose what you want</h2>
+  <p class="sub">Three ways to try the system, each one connected to a live n8n workflow.</p>
+  <div class="bento">
+    <a class="tile" href="#ask-hr"><div class="ic">💬</div><h3>Ask HR</h3><p>Get answers taken only from the company policy documents, with the source named.</p></a>
+    <a class="tile" href="#actions"><div class="ic">🎯</div><h3>Get coached</h3><p>Upload your CV and a job post. Receive a coaching report by email.</p></a>
+    <a class="tile" href="#actions"><div class="ic">📄</div><h3>Apply for a job</h3><p>Send your CV as a PDF. It is checked, saved and scored by AI.</p></a>
+  </div>
+</section>
+
+<section id="ask-hr">
+  <h2>Ask HR</h2>
+  <p class="sub">The assistant answers only from the policy documents. If a topic isn’t covered, it points you to HR.</p>
+  <div class="chat">
+    <div class="chat-head"><i></i>HR policy assistant</div>
+    <div id="msgs" aria-live="polite"></div>
+    <div class="chips"><button type="button" class="chip">How many annual leave days do I get?</button><button type="button" class="chip">What are the password rules?</button></div>
+    <form id="ask"><input id="q" placeholder="Type your question…" required aria-label="Your question"><button class="btn primary">Ask</button></form>
+  </div>
+</section>
+
+<section id="actions">
+  <h2>Apply or get coached</h2>
+  <div class="panel">
+    <p>Both forms open in a new tab. Use a real email address to receive the result. The first time, you may see a notice from ngrok: choose <b>Visit Site</b>.</p>
+    <div class="row">
+      <a class="btn primary" id="applyLink" target="_blank" rel="noopener">Apply for a job</a>
+      <a class="btn" id="coachLink" target="_blank" rel="noopener">Get a coaching report</a>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <h2>How it works</h2>
+  <p class="sub">Six workflows working together.</p>
+  <ol class="steps">
+    <li><b>Intake form</b><span>A candidate applies with a PDF CV. The file is validated, saved to Google Drive and logged in a Google Sheet. Duplicate applications are rejected.</span></li>
+    <li><b>AI screening</b><span>Every hour, new applications are read and each CV is scored by an AI model. Strong candidates get an interview invite, others get a polite decline.</span></li>
+    <li><b>Error handler</b><span>Failures are logged and emailed as alerts. A daily digest summarises problems, and a check every two hours confirms the queue is moving.</span></li>
+    <li><b>HR policy assistant</b><span>A RAG chatbot answers from the policy documents in Google Drive and names its source.</span></li>
+    <li><b>Policy loader</b><span>Refreshes the assistant’s knowledge base at startup and every morning at 7:00.</span></li>
+    <li><b>Job application coach</b><span>A form reads a CV against a job post and emails a coaching report.</span></li>
+  </ol>
+</section>
+
+<section id="download">
+  <h2>Download the workflows</h2>
+  <p class="sub">Import these into your own n8n, then connect your credentials.</p>
+  <div class="files">
+    <a href="workflows/recruitment-1-intake.json">Recruitment 1 – Intake form <em>JSON ↓</em></a>
+    <a href="workflows/recruitment-2-ai-screening.json">Recruitment 2 – AI screening <em>JSON ↓</em></a>
+    <a href="workflows/recruitment-3-error-handler.json">Recruitment 3 – Error handler <em>JSON ↓</em></a>
+    <a href="workflows/rag-hr-assistant.json">RAG – HR policy assistant <em>JSON ↓</em></a>
+    <a href="workflows/policy-loader.json">Policy loader <em>JSON ↓</em></a>
+    <a href="workflows/job-application-coach.json">Job application coach <em>JSON ↓</em></a>
+  </div>
+</section>
+
+<footer>PeopleFlow by Bishoy · Built with n8n, Google Workspace, OpenRouter and Gemini. This demo runs on a personal computer, so it may be offline at times.</footer>
+</main>
+
+<script>
+const CONFIG = {
+  n8nBase: "https://estranged-cadet-upheaval.ngrok-free.dev",
+  chat: "/webhook/6f41c44d-ed15-4440-ad8d-d5c90135ad54/chat",
+  applyForm: "/form/f0330481-640f-4103-986d-e9c24fcfc601",
+  coachForm: "/form/f37cccee-1d2b-4b25-878b-21704c305148"
+};
+const $ = s => document.querySelector(s);
+const sessionId = crypto.randomUUID();
+const HEADERS = { "Content-Type": "application/json", "ngrok-skip-browser-warning": "1" };
+$("#applyLink").href = CONFIG.n8nBase + CONFIG.applyForm;
+$("#coachLink").href = CONFIG.n8nBase + CONFIG.coachForm;
+
+function setStatus(online) {
+  $("#status").textContent = online ? "Online" : "Offline";
+  $("#status").className = "badge " + (online ? "on" : "off");
+  document.querySelectorAll("#applyLink, #coachLink").forEach(a => a.classList.toggle("disabled", !online));
+}
+
+// Any answer from the chat webhook means n8n and ngrok are both running.
+// When either is off, ngrok's error page has no CORS headers, so fetch fails.
+async function checkStatus() {
+  try {
+    await fetch(CONFIG.n8nBase + CONFIG.chat, { method: "POST", headers: HEADERS,
+      body: JSON.stringify({ action: "loadPreviousSession", sessionId }) });
+    setStatus(true);
+  } catch (err) { setStatus(false); }
+}
+checkStatus();
+
+function add(cls, text) {
+  const d = document.createElement("div");
+  d.className = cls; d.textContent = text;
+  $("#msgs").append(d); $("#msgs").scrollTop = $("#msgs").scrollHeight;
+  return d;
+}
+add("bot", "Hi! I answer questions about company policy. Pick a suggestion below or type your own.");
+
+$("#ask").onsubmit = async e => {
+  e.preventDefault();
+  const q = $("#q").value.trim(); if (!q) return;
+  $("#q").value = "";
+  add("me", q);
+  const bot = add("bot", "…");
+  try {
+    const r = await fetch(CONFIG.n8nBase + CONFIG.chat, { method: "POST", headers: HEADERS,
+      body: JSON.stringify({ action: "sendMessage", sessionId, chatInput: q }) });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    bot.textContent = (await r.json()).output;
+    setStatus(true);
+  } catch (err) {
+    bot.textContent = "The HR assistant is offline right now. Please try again later.";
+    setStatus(false);
+  }
+};
+
+document.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+  $("#q").value = c.textContent; $("#ask").requestSubmit();
+});
+</script>
+</body>
+</html>
